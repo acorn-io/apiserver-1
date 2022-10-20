@@ -16,16 +16,16 @@ func ByIDHandler(request *types.APIRequest) (types.APIObject, error) {
 		return types.APIObject{}, apierror.NewAPIError(validation.NotFound, "no store found")
 	}
 
-	resp, err := store.ByID(request, request.Schema, request.Name)
-	if err != nil {
-		return resp, err
-	}
-
 	if request.Link != "" {
 		if handler, ok := request.Schema.LinkHandlers[request.Link]; ok {
 			handler.ServeHTTP(request.Response, request.Request)
 			return types.APIObject{}, validation.ErrComplete
 		}
+	}
+
+	resp, err := store.ByID(request, request.Schema, request.Name)
+	if err != nil {
+		return resp, err
 	}
 
 	return resp, nil

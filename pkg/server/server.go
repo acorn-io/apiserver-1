@@ -171,12 +171,6 @@ func (s *Server) handleOp(apiOp *types.APIRequest) (int, interface{}, error) {
 	}
 
 	if action != nil {
-		if apiOp.Name != "" {
-			data, err := handle(apiOp, apiOp.Schema.ByIDHandler, handlers.ByIDHandler)
-			if err != nil {
-				return http.StatusOK, data, err
-			}
-		}
 		return http.StatusOK, nil, handleAction(apiOp)
 	}
 
