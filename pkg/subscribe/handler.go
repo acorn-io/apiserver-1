@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-var upgrader = websocket.Upgrader{
+var Upgrader = websocket.Upgrader{
 	HandshakeTimeout:  60 * time.Second,
 	EnableCompression: true,
 }
@@ -43,7 +43,7 @@ func Handler(apiOp *types.APIRequest, getter SchemasGetter, serverVersion string
 }
 
 func handler(apiOp *types.APIRequest, getter SchemasGetter, serverVersion string) error {
-	c, err := upgrader.Upgrade(apiOp.Response, apiOp.Request, nil)
+	c, err := Upgrader.Upgrade(apiOp.Response, apiOp.Request, nil)
 	if err != nil {
 		return err
 	}
