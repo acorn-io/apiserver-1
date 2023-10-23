@@ -14,6 +14,7 @@ import (
 	"github.com/rancher/apiserver/pkg/types"
 	"github.com/rancher/apiserver/pkg/writer"
 	"github.com/rancher/wrangler/pkg/schemas/validation"
+	"golang.org/x/exp/slices"
 )
 
 type RequestHandler interface {
@@ -149,7 +150,11 @@ func (s *Server) handle(apiOp *types.APIRequest, parser parse.Parser) {
 	} else if list, ok := data.(types.APIObjectList); ok {
 		apiOp.WriteResponseList(code, list)
 	} else if code > http.StatusOK {
-		apiOp.Response.WriteHeader(code)
+		if code == http.StatusNotFound && slices.Contains([]string{"system:unauthenticated", "system:cattle:error"}, apiOp.GetUser()) {
+			apiOp.Response.WriteHeader(http.StatusUnauthorized)
+		} else {
+			apiOp.Response.WriteHeader(code)
+		}
 	}
 	if apiOp.Schema != nil {
 		metrics.RecordResponseTime(apiOp.Schema.ID, apiOp.Method, strconv.Itoa(code), float64(time.Since(requestStart).Milliseconds()))
