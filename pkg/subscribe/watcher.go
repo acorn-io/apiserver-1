@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/rancher/apiserver/pkg/types"
@@ -121,7 +122,7 @@ func NewWatchSession(apiOp *types.APIRequest, getter SchemasGetter) *WatchSessio
 		watchers: map[string]func(){},
 	}
 
-	ws.ctx, ws.cancel = context.WithCancel(apiOp.Request.Context())
+	ws.ctx, ws.cancel = context.WithTimeout(apiOp.Request.Context(), 1*time.Hour)
 	return ws
 }
 

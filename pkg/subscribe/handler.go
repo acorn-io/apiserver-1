@@ -1,6 +1,7 @@
 package subscribe
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
@@ -65,6 +66,12 @@ func handler(apiOp *types.APIRequest, getter SchemasGetter, serverVersion string
 
 	for {
 		select {
+		case <-watches.ctx.Done(): // usually because of 1h timeout for watches
+			if watches.ctx.Err() == context.DeadlineExceeded {
+				logrus.Trace("WatchSession Timeout")
+				return nil
+			}
+			return watches.ctx.Err()
 		case event, ok := <-events:
 			if !ok {
 				return nil
